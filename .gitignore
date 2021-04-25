@@ -1,0 +1,5 @@
+pixiv_img/*
+log/*
+.idea
+.test
+__pycache__

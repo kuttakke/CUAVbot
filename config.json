@@ -1,0 +1,8 @@
+{
+    "host" : "http://IP地址:端口",
+    "authKey" : "authKey" 
+    "account" : "bot账号id" 
+    "qq" : {
+        "master" : 主人账号id
+    }
+}
