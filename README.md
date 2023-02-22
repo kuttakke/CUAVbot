@@ -1,12 +1,22 @@
-# CUAVbot
+<div align="center">
 
-![](https://img.shields.io/badge/Python-3.8+-green.svg)
+# CUAVBot
 
-Personal use QQ-bot based on Mirai and Graia
+*QQ机器人by[Graia Ariadne](https://github.com/GraiaProject/Ariadne)*
 
-*未测试，不保证可用性*
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+[![pdm-managed](https://img.shields.io/badge/pdm-managed-blueviolet)](https://pdm.fming.dev)
 
-## 感谢
-[Mirai](https://github.com/mamoe/mirai)
+</div>
 
-[Graia Project](https://github.com/GraiaProject)
+
+参考了包括但不限于以下项目：
+
+- [I-love-study/A_Simple_QQ_Bot](https://github.com/I-love-study/A_Simple_QQ_Bot)
+
+- [Redlnn/redbot](https://github.com/RF-Tar-Railt/RaianBot)
+
+- [SAGIRI-kawaii/sagiri-bot](https://github.com/SAGIRI-kawaii/sagiri-bot)
+
+感谢！

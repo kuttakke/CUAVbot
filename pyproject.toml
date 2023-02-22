@@ -1,0 +1,94 @@
+[project]
+name = "cuavbot-ariadne"
+version = "1.0.0"
+description = "基于graia-ariadne的QQbot"
+authors = [
+    { name = "kutake", email = "kuttake@outlook.com" },
+]
+dependencies = [
+    "dynaconf<4.0.0,>=3.1.7",
+    "aiosqlite<1.0.0,>=0.17.0",
+    "Pillow<10.0.0,>=9.0.1",
+    "aiohttp-proxy<1.0.0,>=0.1.2",
+    "aiofile<4.0.0,>=3.7.4",
+    "feedparser<7.0.0,>=6.0.8",
+    "qrcode<8.0.0,>=7.3.1",
+    "imageio-ffmpeg<1.0.0,>=0.4.5",
+    "psutil<6.0.0,>=5.9.0",
+    "pixivpy-async<2.0.0,>=1.2.14",
+    "aiohttp-socks<1.0.0,>=0.7.1",
+    "imageio<3.0.0,>=2.16.2",
+    "tencentcloud-sdk-python-ocr<4.0.0,>=3.0.619",
+    "tencentcloud-sdk-python-common<4.0.0,>=3.0.619",
+    "rich>=12.4.4",
+    "tinydb>=4.7.0",
+    "setuptools>=63.2.0",
+    "jionlp>=1.4.18",
+    "wordcloud>=1.8.2.2",
+    "jieba>=0.42.1",
+    "pandas>=1.5.2",
+    "sentry-sdk>=1.13.0",
+    "PicImageSearch>=3.7.8",
+    "sqlmodel>=0.0.8",
+    "jinja2>=3.1.2",
+    "graia-ariadne[full]>=0.11.0",
+    "graiax-text2img-playwright>=0.3.0",
+    "graiax-shortcut>=0.2.1",
+    "graiax-silkcoder>=0.3.5",
+    "prompt-toolkit>=3.0.37",
+    "viztracer>=0.15.6",
+]
+requires-python = ">=3.10"
+license = { text = "GPLv3" }
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "black>=23.1.0",
+    "isort>=5.12.0",
+]
+
+[tool.pdm]
+
+[tool.pdm.scripts]
+start = "python bot.py"
+
+[[tool.pdm.source]]
+name = "tuna-tsinghua"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+verify_ssl = true
+
+[[tool.pdm.source]]
+name = "aliyun"
+url = "https://mirrors.aliyun.com/pypi/simple/"
+verify_ssl = true
+
+[[tool.pdm.source]]
+name = "tencent-cloud"
+url = "https://mirrors.cloud.tencent.com/pypi/simple"
+verify_ssl = true
+
+[[tool.pdm.source]]
+name = "lug-ustc"
+url = "https://mirrors.ustc.edu.cn/pypi/web/simple"
+verify_ssl = true
+
+[build-system]
+requires = ["pdm-pep517>=0.12.0"]
+build-backend = "pdm.pep517.api"
+
+[project.urls]
+
+[tool.pyright]
+ignore = [
+    "__pypackages__",
+    "**/site-packages/**/*.py"
+]
+reportShadowedImports = false
+
+[tool.isort]
+skip = [
+    "**/__pypackages__/**/*.py",   
+]
+skip_glob = [
+    "__pypackages__/*",
+]

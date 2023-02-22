@@ -1,0 +1,28 @@
+[mirai]
+host = "http://127.0.0.1:9636" # mirai api http
+account = mirai账号
+key = "http key"
+master = 主人qq号
+debug_group = 测试群号
+admins = []
+modules_base_path = "modules"
+core_modules_path = "required"
+self_modules_path = "self"
+bot_name = "CUAVbot"
+master_name = "UAV"
+debug_module = []
+
+[proxy]
+host = "192.168.0.1" # 代理
+port = 7891
+type = "socks5"
+
+[saucenao]
+api_key = "saucenao api key 用于搜图"
+
+[pix]
+save_path = "auto pix 图片存储位置"
+
+[tencent_cloud]
+secret_id = "腾讯云 打算用来图转文字，已经用不上了"
+secret_key = "腾讯云 打算用来图转文字，已经用不上了"

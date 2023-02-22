@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{margin: 0; padding: 0}
+
+        body {
+            width: 1000px;
+        }
+
+        .flex-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .flex-space-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .flex-space-center {
+            margin-left: 10%;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        #banner-image-box {
+            width: 1000px;
+            background-size: cover;
+            background-image: url({{ banner }});
+        }
+
+        #title-box {
+            width: 1000px;
+            height: 625px;
+        }
+
+        #title {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        #title h1 {
+            color: white;
+            font-size: 60px;
+        }
+
+        #subtitle {
+            color: white;
+            font-size: 30px;
+        }
+
+        #gradient-color {
+            width: 100%;
+            flex: 1;
+            background: -webkit-linear-gradient(
+                rgba(255, 222, 255, 0),
+                rgba(255, 222, 255, 1)
+            );
+        }
+
+        #table-box {
+            width: 100%;
+            z-index: 999;
+        }
+
+        .table-title-box {
+            width: 960px;
+            margin: 20px;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.4);
+            font-size: 28px;
+        }
+
+        .icon-svg {
+
+            border-radius: 10px;
+            font-size: 28px;
+        }
+
+        .table-title {
+            width: auto;
+            height: 35px;
+            line-height: 35px;
+            color: white;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 20px 5px 10px;
+            border-right: 0;
+            position: relative;
+        }
+
+        .table-title:after {
+            content: "";
+            display: block;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.5) transparent transparent transparent;
+            border-width: 45px 45px 0 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+            top: 0;
+            right: -45px;
+        }
+
+        .menu-table {
+            width: 960px;
+            margin: 20px;
+            color: white;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 20px;
+        }
+        .menu-table, .menu-table th, .menu-table td {
+            font-size: 20px;
+            text-align: center;
+            padding: 4px;
+            border-collapse: collapse;
+        }
+        .menu-table th, .menu-table td {
+            border: 2px solid rgb(255, 222, 255);
+        }
+        .menu-table tr:nth-child(odd){
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+        .menu-table tr:nth-child(even){
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .menu-table tr:first-child td:first-child {
+            border-top-left-radius: 10px;
+        }
+
+        .menu-table tr:last-child td:first-child {
+            border-bottom-left-radius: 10px;
+        }
+
+        .menu-table tr:first-child td:last-child {
+            border-top-right-radius: 10px;
+        }
+
+        .menu-table tr:last-child td:last-child {
+            border-bottom-right-radius: 10px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        .plugin-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2px 10px;
+        }
+
+        .detail-help-box {
+            font-size: 24px;
+            color: white;
+            padding: 5px 20px 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="flex-column" style="background-color: rgb(255, 222, 255);">
+        <div id="banner-image-box">
+            <div id="title-box" class="flex-column">
+                <div style="height: 400px"></div>
+                <div id="title">
+                    <h1>{{ title }}</h1>
+                </div>
+                <div id="subtitle">
+                    {{ subtitle }}
+                </div>
+                <div id="gradient-color"></div>
+            </div>
+        </div>
+        <div id="table-box">
+            <div class="table-title-box flex-space-between">
+                <div class="table-title">
+                    系统详情
+                </div>
+            </div>
+            <div class="icon-svg flex-space-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="35" height="35"><path fill="none" d="M0 0h24v24H0z"/><path d="M4 16h16V5H4v11zm9 2v2h4v2H7v-2h4v-2H2.992A.998.998 0 0 1 2 16.993V4.007C2 3.451 2.455 3 2.992 3h18.016c.548 0 .992.449.992 1.007v12.986c0 .556-.455 1.007-.992 1.007H13z"/></svg>
+                <p class="detail-text">
+                    &emsp;{{ system_info }}
+                </p>
+            </div>
+            <div class="icon-svg flex-space-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="35" height="35"><path fill="none" d="M0 0h24v24H0z"/><path d="M6 18h12V6H6v12zm8 2h-4v2H8v-2H5a1 1 0 0 1-1-1v-3H2v-2h2v-4H2V8h2V5a1 1 0 0 1 1-1h3V2h2v2h4V2h2v2h3a1 1 0 0 1 1 1v3h2v2h-2v4h2v2h-2v3a1 1 0 0 1-1 1h-3v2h-2v-2zM8 8h8v8H8V8z"/></svg>
+                <p class="detail-text">
+                    &emsp;{{ cpu_info }}
+                </p>
+            </div>
+            <div class="icon-svg flex-space-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="35" height="35"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 2a9.98 9.98 0 0 1 7.743 3.671L13.414 12l6.329 6.329A9.98 9.98 0 0 1 12 22C6.477 22 2 17.523 2 12S6.477 2 12 2zm0 2a8 8 0 1 0 4.697 14.477l.208-.157-6.32-6.32 6.32-6.321-.208-.156a7.964 7.964 0 0 0-4.394-1.517L12 4zm0 1a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/></svg>                <p class="detail-text">
+                <p class="detail-text">
+                    &emsp;{{ memory_info }}
+                </p>
+            </div>
+            <div class="icon-svg flex-space-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="35" height="35"><path fill="none" d="M0 0h24v24H0z"/><path d="M3.064 7.51A9.996 9.996 0 0 1 12 2c2.695 0 4.959.99 6.69 2.605l-2.867 2.868C14.786 6.482 13.468 5.977 12 5.977c-2.605 0-4.81 1.76-5.595 4.123-.2.6-.314 1.24-.314 1.9 0 .66.114 1.3.314 1.9.786 2.364 2.99 4.123 5.595 4.123 1.345 0 2.49-.355 3.386-.955a4.6 4.6 0 0 0 1.996-3.018H12v-3.868h9.418c.118.654.182 1.336.182 2.045 0 3.046-1.09 5.61-2.982 7.35C16.964 21.105 14.7 22 12 22A9.996 9.996 0 0 1 2 12c0-1.614.386-3.14 1.064-4.49z"/></svg>
+                <p class="detail-text">
+                    &emsp;
+                </p>
+                {% if is_local_pass %}
+                <p class="detail-text" style="color: green;">
+                    本地Pass
+                </p>
+                {% else %}
+                <p class="detail-text" style="color: red;">
+                    本地Fail
+                </p>
+                {% endif %}
+                <p class="detail-text">
+                    &emsp;&emsp;
+                </p>
+                {% if is_proxy_pass %}
+                <p class="detail-text" style="color: green;">
+                    代理Pass
+                </p>
+                {% else %}
+                <p class="detail-text" style="color: red;">
+                    代理Fail
+                </p>
+                {% endif %}
+            </div>
+            <div class="table-title-box flex-space-between">
+                <div class="table-title">
+                    Bot信息
+                </div>
+            </div>
+            <table class="menu-table">
+                {% for i in range(0, (info_list | length), 3) %}
+                <tr>
+                    {% for setting in info_list[i: i + 3] %}
+                    <td>
+                        {% if setting %}
+                        <div class="plugin-item">
+                            <p style="text-align: left">
+                                {{ setting }}
+                            </p>
+                        </div>
+                        {% else %}
+                        <div class="plugin-item"></div>
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</body>
+</html>
