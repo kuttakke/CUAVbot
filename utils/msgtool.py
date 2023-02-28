@@ -19,6 +19,7 @@ from graia.ariadne.entry import (
 )
 from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.exception import RemoteException, UnknownTarget
+from graia.ariadne.message.element import DisplayStrategy
 
 from config import settings
 from core.control import Controller
@@ -81,8 +82,12 @@ async def send_group(
     :return: None
     """
     msg = _make_msg(msg, at)
+    group = (
+        target if isinstance(target, Group) else await get_ariadne().get_group(target)
+    )
+    assert group
     return await get_ariadne().send_group_message(
-        target=target,
+        target=group,
         message=msg,
         quote=quote
         if quote and (is_quote_safe or await _is_source_exists(quote))
@@ -106,16 +111,29 @@ def make_forward_msg(msg: Sequence[str | bytes | MessageChain]) -> Forward:
     Returns:
         Forward: 转发消息
     """
-    return Forward(
-        node_list=[
+    nodes = []
+    preview = []
+    for i in msg:
+        msg_node = _make_msg(i)
+        nodes.append(
             ForwardNode(
                 target=settings.mirai.account,
                 time=datetime.now(),
-                message=_make_msg(msg_item),
+                message=msg_node,
                 name=settings.mirai.bot_name,
             )
-            for msg_item in msg
-        ]
+        )
+        preview.append(f"{settings.mirai.bot_name}:{msg_node.display.strip()}")
+
+    return Forward(
+        node_list=nodes,
+        display=DisplayStrategy(
+            title="群聊的聊天记录",
+            brief="[聊天记录]",
+            source="聊天记录",
+            preview=preview,
+            summary=f"查看{len(msg)}条转发消息",
+        ),
     )
 
 
