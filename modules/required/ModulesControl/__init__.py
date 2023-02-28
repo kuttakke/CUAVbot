@@ -160,9 +160,10 @@ async def restart(app: Ariadne, group: Group, member: Member):
         ):
             return MessageChain("正在重启...")
 
-    res = await FunctionWaiter(waiter, [GroupMessage]).wait(
-        timeout=15, default=MessageChain("重启已取消")
-    )
+    res = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=15, default=None)
+    if not res:
+        await app.send_message(group, MessageChain("重启已取消"))
+        return
     await app.send_message(group, res)
     # NOTE - 可能会出现不可预知的错误
     python = sys.executable

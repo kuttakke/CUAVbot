@@ -97,9 +97,7 @@ async def send_group(
 
 async def send_debug(msg: MessageChain | str | bytes):
     """发送调试消息"""
-    return await get_ariadne().send_group_message(
-        target=settings.mirai.debug_group, message=_make_msg(msg)
-    )
+    return await send_group(target=settings.mirai.debug_group, msg=_make_msg(msg))
 
 
 def make_forward_msg(msg: Sequence[str | bytes | MessageChain]) -> Forward:

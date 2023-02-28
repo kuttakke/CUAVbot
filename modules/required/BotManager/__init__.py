@@ -22,6 +22,7 @@ from graiax.shortcut.saya import listen
 from config import settings
 from core.control import Controller
 from core.entity import Modules
+from utils.msgtool import send_debug
 from utils.session import Session
 from utils.tool import to_module_file_name
 
@@ -41,14 +42,13 @@ async def launched(app: Ariadne):
     group_list = await app.get_group_list()
     quit_groups = 0
     msg = f"{settings.mirai.bot_name} 当前共加入了 {len(group_list) - quit_groups} 个群"
-    await app.send_group_message(settings.mirai.debug_group, MessageChain(msg))
+    await send_debug(MessageChain(msg))
 
 
 @listen(ApplicationShutdowned)
-async def shutdowned(app: Ariadne):
+async def shutdowned():
     await Session.close()
-    await app.send_group_message(
-        settings.mirai.debug_group,
+    await send_debug(
         MessageChain(
             f"{settings.mirai.bot_name} 正在关闭",
         ),
@@ -67,8 +67,7 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
         group = await app.get_group(source_group)
         groupname = group.name if group else "未知"
 
-    await app.send_group_message(
-        settings.mirai.debug_group,
+    await send_debug(
         MessageChain(
             Plain(f"收到添加好友事件\nQQ：{event.supplicant}\n昵称：{event.nickname}\n"),
             Plain(f"来自群：{groupname}({source_group})\n")
@@ -95,21 +94,18 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
     result = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=120)
     if result is None:
         await event.accept()
-        await app.send_group_message(
-            settings.mirai.debug_group,
+        await send_debug(
             MessageChain(f"由于超时未审核，已自动同意 {event.nickname}({event.supplicant}) 的好友请求"),
         )
         return
     if result:
         await event.accept()
-        await app.send_group_message(
-            settings.mirai.debug_group,
+        await send_debug(
             MessageChain(Plain(f"已同意 {event.nickname}({event.supplicant}) 的好友请求")),
         )
         return
     await event.reject("Bot 主人拒绝了你的好友请求")
-    await app.send_group_message(
-        settings.mirai.debug_group,
+    await send_debug(
         MessageChain(Plain(f"已拒绝 {event.nickname}({event.supplicant}) 的好友请求")),
     )
 
@@ -120,8 +116,7 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
     被邀请入群
     """
 
-    await app.send_group_message(
-        settings.mirai.debug_group,
+    await send_debug(
         MessageChain(
             "收到邀请入群事件\n"
             f"邀请者：{event.nickname}({event.supplicant})\n"
@@ -147,8 +142,7 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
     result = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=120)
     if result is None:
         await event.reject("由于 Bot 管理员长时间未审核，已自动拒绝")
-        await app.send_group_message(
-            settings.mirai.debug_group,
+        await send_debug(
             MessageChain(
                 f"由于长时间未审核，已自动拒绝 "
                 f"{event.nickname}({event.supplicant}) 邀请进入群 {event.group_name}({event.source_group}) 请求"
@@ -157,16 +151,14 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
         return
     if result:
         await event.accept()
-        await app.send_group_message(
-            settings.mirai.debug_group,
+        await send_debug(
             MessageChain(
                 f"已同意 {event.nickname}({event.supplicant}) 邀请进入群 {event.group_name}({event.source_group}) 请求"
             ),
         )
         return
     await event.reject("Bot 主人拒绝加入该群")
-    await app.send_group_message(
-        settings.mirai.debug_group,
+    await send_debug(
         MessageChain(
             f"已拒绝 {event.nickname}({event.supplicant}) 邀请进入群 {event.group_name}({event.source_group}) 请求"
         ),
@@ -179,8 +171,7 @@ async def join_group(app: Ariadne, event: BotJoinGroupEvent):
     收到入群事件
     """
     member_num: int = len(await app.get_member_list(event.group))
-    await app.send_group_message(
-        settings.mirai.debug_group,
+    await send_debug(
         MessageChain(
             f"收到 Bot 入群事件\n群号：{event.group.id}\n群名：{event.group.name}\n群人数：{member_num}"
         ),
@@ -197,34 +188,31 @@ async def join_group(app: Ariadne, event: BotJoinGroupEvent):
 
 
 @listen(BotLeaveEventKick)
-async def kick_group(app: Ariadne, event: BotLeaveEventKick):
+async def kick_group(event: BotLeaveEventKick):
     """
     被踢出群
     """
-    await app.send_group_message(
-        settings.mirai.debug_group,
+    await send_debug(
         MessageChain(f"收到被踢出群聊事件\n群号：{event.group.id}\n群名：{event.group.name}\n"),
     )
 
 
 @listen(BotLeaveEventActive)
-async def leave_group(app: Ariadne, event: BotLeaveEventActive):
+async def leave_group(event: BotLeaveEventActive):
     """
     主动退群
     """
-    await app.send_group_message(
-        settings.mirai.debug_group,
+    await send_debug(
         MessageChain(f"收到主动退出群聊事件\n群号：{event.group.id}\n群名：{event.group.name}\n"),
     )
 
 
 @listen(BotGroupPermissionChangeEvent)
-async def permission_change(app: Ariadne, event: BotGroupPermissionChangeEvent):
+async def permission_change(event: BotGroupPermissionChangeEvent):
     """
     群内权限变动
     """
-    await app.send_group_message(
-        settings.mirai.debug_group,
+    await send_debug(
         MessageChain(
             f"收到权限变动事件\n群号：{event.group.id}\n群名：{event.group.name}\n权限变更为：{event.current}"
         ),
@@ -236,9 +224,7 @@ async def resend_friend_msg_to_group(app: Ariadne, friend: Friend, msg: MessageC
     if "pix登录" in msg.display:
         return
     info = f"收到好友:{friend.nickname}@{friend.id}的消息:\n"
-    await app.send_group_message(
-        settings.mirai.debug_group, MessageChain(info).extend(msg.as_sendable())
-    )
+    await send_debug(MessageChain(info).extend(msg.as_sendable()))
 
 
 @listen(MemberJoinEvent)

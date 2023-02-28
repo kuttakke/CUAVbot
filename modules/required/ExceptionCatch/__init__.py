@@ -13,6 +13,7 @@ from rich.traceback import Traceback
 from config import settings
 from core.control import Controller
 from core.entity import Modules
+from utils.msgtool import send_debug
 from utils.t2i import html2img
 from utils.tool import to_module_file_name
 
@@ -90,7 +91,4 @@ async def except_handle(event: ExceptionThrowed):
     image = await html2img(
         content, {"device_scale_factor": 1.5}, {"type": "png", "full_page": True}
     )
-    app = Ariadne.current()
-    await app.send_group_message(
-        settings.mirai.debug_group, MessageChain(Image(data_bytes=image))
-    )
+    await send_debug(MessageChain(Image(data_bytes=image)))
