@@ -3,19 +3,15 @@ from pathlib import Path
 
 from graia.ariadne.entry import (
     Ariadne,
-    Friend,
     FriendMessage,
-    Group,
     GroupMessage,
     Image,
-    Member,
     MessageChain,
     MessageEvent,
 )
 from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.parser.twilight import MatchResult
 from graia.ariadne.util.interrupt import FunctionWaiter
-from graia.saya.channel import Channel
 from graiax.shortcut.saya import decorate, dispatch, listen
 
 from core.control import Controller, Modules
@@ -74,7 +70,7 @@ async def waifu_group(
             if waiter_event.sender.id == event.sender.id and waiter_message.has(Image):
                 return waiter_message.get_first(Image).url
 
-    res = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=30)
+    res = await FunctionWaiter(waiter, [GroupMessage, FriendMessage]).wait(timeout=30)
     if not res:
         await app.send_message(event, MessageChain("搜图超时😢"))
         return
