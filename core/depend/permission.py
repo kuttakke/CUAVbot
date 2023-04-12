@@ -44,7 +44,7 @@ class Permission:
         def wrapper(group: Group, member: Member):
             if (
                 group.id != settings.mirai.debug_group
-                and member.id != settings.mirai.master
+                or member.id != settings.mirai.master
             ):
                 raise ExecutionStop
 
