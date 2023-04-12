@@ -8,6 +8,7 @@ import ujson
 from aiohttp.client_exceptions import ServerDisconnectedError
 from loguru import logger
 
+from utils.func_retry import aretry
 from utils.session import Session
 
 from .service import (
@@ -138,8 +139,8 @@ class _Chatbot:
             conversation.pop(1)
 
     @classmethod
+    @aretry(times=3, exceptions=(APIError, ServerDisconnectedError, TimeoutError))
     async def _ask(cls, conversation: list[dict[str, str]]) -> _GptResponse:
-        # TODO 优化错误重试
         async with Session.proxy_session.post(
             "https://api.openai.com/v1/chat/completions",
             headers={"Authorization": f"Bearer {cls.API_KEY}"},
@@ -174,11 +175,9 @@ class _Chatbot:
         await cls.check_token(conversation)
         try:
             response = await cls._ask(conversation)
-        except ServerDisconnectedError as e:
-            logger.exception(e)
+        except ServerDisconnectedError:
             return "ChatGPT出错了: 服务器断开连接"
-        except TimeoutError as e:
-            logger.exception(e)
+        except TimeoutError:
             return "ChatGPT出错了: 请求超时"
         except Exception as e:
             logger.exception(e)
