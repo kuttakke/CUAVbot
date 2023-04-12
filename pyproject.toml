@@ -38,6 +38,8 @@ dependencies = [
     "prompt-toolkit>=3.0.37",
     "viztracer>=0.15.6",
     "bilireq>=0.2.3.post0",
+    "ujson>=5.7.0",
+    "tiktoken>=0.3.3",
 ]
 requires-python = ">=3.10"
 license = { text = "GPLv3" }
