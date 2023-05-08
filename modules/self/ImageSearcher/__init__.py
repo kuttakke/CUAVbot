@@ -50,7 +50,9 @@ async def waifu_group(
         search = Searcher.waifu
     if url := await get_url(event, img):
         await app.send_message(event, MessageChain("正在搜索中..."))
-        await app.send_message(event, await search(url))
+        res = await app.send_message(event, await search(url))
+        if res.id < 0:
+            await app.send_message(event, MessageChain("搜图结果发送失败😢可能被风控了"))
         return
     await app.send_message(event, MessageChain("请发送图片"))
 
@@ -75,7 +77,9 @@ async def waifu_group(
         await app.send_message(event, MessageChain("搜图超时😢"))
         return
     await app.send_message(event, MessageChain("正在搜索中..."))
-    await app.send_message(event, await search(res))
+    res = await app.send_message(event, await search(res))
+    if res.id < 0:
+        await app.send_message(event, MessageChain("搜图结果发送失败😢可能被风控了"))
 
 
 async def get_url(event: MessageEvent, img: MatchResult) -> str:

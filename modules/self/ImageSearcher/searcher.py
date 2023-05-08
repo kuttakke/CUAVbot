@@ -14,6 +14,8 @@ from config import settings
 from utils import aretry
 from utils.msgtool import make_forward_msg
 
+from .yandex import Yandex
+
 
 class Searcher:
     @classmethod
@@ -33,7 +35,9 @@ class Searcher:
                     if hasattr(resp_item, "title") and resp_item.title
                     else ""
                 ),
-                Image(data_bytes=await engine.download(resp_item.thumbnail)),
+                Image(data_bytes=await engine.download(resp_item.thumbnail))
+                if hasattr(resp_item, "thumbnail") and resp_item.thumbnail
+                else Plain(""),
                 Plain("\n"),
                 Plain(
                     f"相似度: {resp_item.similarity}%\n"
@@ -69,10 +73,13 @@ class Searcher:
         | Type[BaiDu]
         | Type[EHentai]
         | Type[Google]
-        | Type[Iqdb],
+        | Type[Iqdb]
+        | Type[Yandex],
     ) -> list[MessageChain]:
         if engine == SauceNAO:
-            engine_ = engine(client=client, api_key=settings.saucenao.api_key)
+            engine_ = engine(
+                client=client, api_key=settings.saucenao.api_key  # type: ignore
+            )
         else:
             engine_ = engine(client=client)
         resp = await engine_.search(url)
@@ -97,7 +104,8 @@ class Searcher:
         | Type[BaiDu]
         | Type[EHentai]
         | Type[Google]
-        | Type[Iqdb],
+        | Type[Iqdb]
+        | Type[Yandex],
     ) -> list[MessageChain]:
         try:
             return await cls._handler(client, url, engine)
@@ -111,13 +119,13 @@ class Searcher:
     async def waifu(cls, url: str) -> MessageChain:
         start = perf_counter()
         async with cls._network as client:
-            res1, res2, res3 = await asyncio.gather(
+            res1, res2, res3, res4 = await asyncio.gather(
                 *[
                     asyncio.ensure_future(cls._exc_handler(client, url, engine))
-                    for engine in [SauceNAO, Ascii2D, Iqdb]
+                    for engine in [SauceNAO, Ascii2D, Iqdb, Yandex]
                 ]
             )
-        all_msg = res1 + res2 + res3
+        all_msg = res1 + res2 + res3 + res4
         if len(all_msg) == 3 and all("错误" in msg for msg in all_msg):
             return MessageChain("搜图出现错误😢")
         return MessageChain(
