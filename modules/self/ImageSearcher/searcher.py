@@ -17,6 +17,10 @@ from utils.msgtool import make_forward_msg
 from .yandex import Yandex
 
 
+class DownloadError(Exception):
+    pass
+
+
 class Searcher:
     @classmethod
     @property
@@ -25,8 +29,31 @@ class Searcher:
             proxies=f"{settings.proxy.type}://{settings.proxy.host}:{settings.proxy.port}"
         )
 
+    @staticmethod
+    def is_img(img: bytes) -> bool:
+        """检查是否为图片"""
+        return img.endswith(b"\xff\xd9") or img.endswith(b"\xaeB`\x82")
+
+    @classmethod
+    @aretry(times=2)
+    async def download(cls, engine: HandOver, url: str) -> bytes:
+        """下载图片"""
+        bytes_data = await engine.download(url)
+        if not cls.is_img(bytes_data):
+            logger.error(f"[ImageSearcher]img type error: {url}")
+            raise DownloadError("预览图片下载失败")
+        return bytes_data
+
     @classmethod
     async def _msg(cls, engine: HandOver, resp_item):
+        try:
+            if hasattr(resp_item, "thumbnail") and resp_item.thumbnail:
+                img = await cls.download(engine, resp_item.thumbnail)
+            else:
+                img = ""
+        except DownloadError as e:
+            img = str(e)
+        element = Image(data_bytes=img) if isinstance(img, bytes) else Plain(img)
         return MessageChain(
             [
                 Plain(f"搜图引擎: {engine.__class__.__name__}\n"),
@@ -35,9 +62,7 @@ class Searcher:
                     if hasattr(resp_item, "title") and resp_item.title
                     else ""
                 ),
-                Image(data_bytes=await engine.download(resp_item.thumbnail))
-                if hasattr(resp_item, "thumbnail") and resp_item.thumbnail
-                else Plain(""),
+                element,
                 Plain("\n"),
                 Plain(
                     f"相似度: {resp_item.similarity}%\n"
