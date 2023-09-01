@@ -1,12 +1,12 @@
 """ 关于sendMessage的工具方法 """
 
+import asyncio
 from datetime import datetime
 from typing import Sequence
 
 from graia.ariadne.entry import (
     Ariadne,
     At,
-    Element,
     Forward,
     ForwardNode,
     Friend,
@@ -19,7 +19,6 @@ from graia.ariadne.entry import (
 )
 from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.exception import RemoteException, UnknownTarget
-from graia.ariadne.message.element import DisplayStrategy
 
 from config import settings
 from core.control import Controller
@@ -109,29 +108,16 @@ def make_forward_msg(msg: Sequence[str | bytes | MessageChain]) -> Forward:
     Returns:
         Forward: 转发消息
     """
-    nodes = []
-    preview = []
-    for i in msg:
-        msg_node = _make_msg(i)
-        nodes.append(
+    return Forward(
+        node_list=[
             ForwardNode(
                 target=settings.mirai.account,
                 time=datetime.now(),
-                message=msg_node,
+                message=_make_msg(msg_item),
                 name=settings.mirai.bot_name,
             )
-        )
-        preview.append(f"{settings.mirai.bot_name}:{msg_node.display.strip()}")
-
-    return Forward(
-        node_list=nodes,
-        display=DisplayStrategy(
-            title="群聊的聊天记录",
-            brief="[聊天记录]",
-            source="聊天记录",
-            preview=preview,
-            summary=f"查看{len(msg)}条转发消息",
-        ),
+            for msg_item in msg
+        ]
     )
 
 
@@ -185,6 +171,7 @@ async def send_message_by_black_list(
                 await app.send_group_message(group.id, i)
         else:
             await app.send_group_message(group.id, msg)
+        await asyncio.sleep(0.5)
 
 
 @aretry(times=2, exceptions=(RemoteException,))
