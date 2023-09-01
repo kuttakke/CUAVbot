@@ -219,14 +219,6 @@ async def permission_change(event: BotGroupPermissionChangeEvent):
     )
 
 
-@listen(FriendMessage)
-async def resend_friend_msg_to_group(app: Ariadne, friend: Friend, msg: MessageChain):
-    if "pix登录" in msg.display:
-        return
-    info = f"收到好友:{friend.nickname}@{friend.id}的消息:\n"
-    await send_debug(MessageChain(info).extend(msg.as_sendable()))
-
-
 @listen(MemberJoinEvent)
 async def member_welcome(app: Ariadne, event: MemberJoinEvent, group: Group):
     await app.send_group_message(
