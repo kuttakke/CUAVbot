@@ -1,6 +1,7 @@
 from typing import Literal, overload
 
 import aiohttp
+import ujson
 from aiohttp_proxy import ProxyConnector, ProxyType
 from loguru import logger
 
@@ -23,7 +24,8 @@ class Session:
                     host=settings.proxy.host,
                     port=settings.proxy.port,
                     # rdns=True,
-                )
+                ),
+                json_serialize=ujson.dumps,
             )
         return cls._proxy_session
 
@@ -31,7 +33,7 @@ class Session:
     @property
     def session(cls) -> aiohttp.ClientSession:
         if not cls._session:
-            cls._session = aiohttp.ClientSession()
+            cls._session = aiohttp.ClientSession(json_serialize=ujson.dumps)
         return cls._session
 
     @classmethod
@@ -49,7 +51,7 @@ class Session:
         url: str,
         *,
         proxy: bool = False,
-        response_type="json",
+        response_type: Literal["json"],
         __retry: int = 0,
         **kwargs,
     ) -> dict:
@@ -63,7 +65,7 @@ class Session:
         url: str,
         *,
         proxy: bool = False,
-        response_type="text",
+        response_type: Literal["text"],
         __retry: int = 0,
         **kwargs,
     ) -> str:
@@ -77,7 +79,7 @@ class Session:
         url: str,
         *,
         proxy: bool = False,
-        response_type="bytes",
+        response_type: Literal["bytes"],
         __retry: int = 0,
         **kwargs,
     ) -> bytes:
@@ -90,16 +92,18 @@ class Session:
         url: str,
         *,
         proxy: bool = False,
-        response_type: str = "json",
+        response_type: Literal["json", "text", "bytes"] = "json",
         __retry: int = 0,
         **kwargs,
     ) -> dict | str | bytes:
         session = cls.proxy_session if proxy else cls.session
+        # NOTE - 不清楚为什么第二次请求，指明的__retry入参会进入kwargs
+        __retry = kwargs.pop("__retry", __retry)
         try:
             async with session.request(method, url, **kwargs) as resp:
                 # return resp.json
                 if response_type == "json":
-                    return await resp.json()
+                    return await resp.json(loads=ujson.loads)
                 elif response_type == "text":
                     return await resp.text()
                 elif response_type == "bytes":
@@ -109,7 +113,12 @@ class Session:
         except aiohttp.ClientError as e:
             if __retry < 3:
                 return await cls.request(
-                    method, url, proxy=proxy, __retry=__retry + 1, **kwargs
+                    method,
+                    url,
+                    proxy=proxy,
+                    response_type=response_type,
+                    __retry=__retry + 1,
+                    **kwargs,
                 )
             logger.exception(e)
             raise e
