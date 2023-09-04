@@ -1,6 +1,6 @@
 from sqlmodel import col, desc, func, select
 
-from .entity import ChatLog, GroupConfig, db
+from .entity import ChatLog, CustomRole, GroupConfig, db
 
 
 async def insert_chat_log(chat_log: ChatLog):
@@ -8,13 +8,14 @@ async def insert_chat_log(chat_log: ChatLog):
     await db.add(ChatLog, values=chat_log.dict())
 
 
-async def get_last_chat_log(group_id: int, user_id: int, prompt_title: str) -> ChatLog:
+async def get_last_chat_log(group_id: int, prompt_title: str) -> ChatLog:
     """获取最后一条聊天记录"""
     stmt = (
         select(ChatLog)
         .where(
             col(ChatLog.group_id) == group_id,
-            col(ChatLog.user_id) == user_id,
+            # 加了之后会导致消息不是按群组分开而是按人分开
+            # col(ChatLog.user_id) == user_id,
             col(ChatLog.system_prompt_title) == prompt_title,
         )
         .order_by(desc(ChatLog.created))
@@ -65,6 +66,21 @@ async def get_chatted_group_ids() -> list[int]:
     """获取已经聊过天的群号"""
     stmt = select(ChatLog.group_id).distinct()
     return (await db.execute(stmt)).all()
+
+
+async def add_custom_role(role: CustomRole):
+    return await db.add(CustomRole, values=role.dict(exclude={"id"}))
+
+
+async def get_custom_role_by_group(group: int, id: int = -1) -> list[CustomRole]:
+    stmt = select(CustomRole).where(CustomRole.group_id == group)
+    if id != -1:
+        stmt = stmt.where(CustomRole.id == id)
+    return (await db.execute(stmt)).all()
+
+
+async def remove_custom_role_by_id(id: int):
+    await db.delete(CustomRole, [CustomRole.id == id])
 
 
 # async def get_group_chat_log(group_id: int, limit: int) -> list[ChatGroupLog]:
