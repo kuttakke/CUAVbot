@@ -14,6 +14,7 @@ from graiax.shortcut.saya import decorate, dispatch, listen, schedule
 
 from core.control import Controller, Modules
 from core.depend.blacklist import BlackList
+from core.depend.permission import Permission
 from utils.msgtool import make_forward_msg, send_debug, send_forward_msg_with_retry
 from utils.tool import to_module_file_name
 
@@ -101,6 +102,23 @@ async def sign(app: Ariadne, event: MessageEvent):
             event, MessageChain(f"[森空岛] {user.name}签到成功\n{state.info}")
         )
 
+
+@listen(GroupMessage)
+@dispatch(Command.SignAll)
+@decorate(BlackList.require(module_name),Permission.r_debug())
+async def sign_all_c(app: Ariadne, event: MessageEvent):
+    for user in await get_all_user():
+        async with aiohttp.ClientSession() as session:
+            state = await skland.attendance(session, user)
+        if state.code != 0:
+            await app.send_friend_message(
+                user.qid, MessageChain(f"[森空岛] {user.name}签到出现错误：{state.info}")
+            )
+            await send_debug(f"[森空岛] {user.qid}:{user.name}签到出现错误：{state.info}")
+            continue
+        await app.send_friend_message(
+            user.qid, MessageChain(f"[森空岛] {user.name}签到成功\n{state.info}")
+        )
 
 @schedule(Command.TimerSign)
 async def sign_all(app: Ariadne):

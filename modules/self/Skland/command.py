@@ -14,6 +14,9 @@ class Command:
     Sign = Twilight(
         RegexMatch(r"[.。！!]((森空岛签到)|(签到森空岛))"),
     )
+    SignAll = Twilight(
+        RegexMatch(r"[.。！!]((森空岛全局签到)|(全局签到森空岛))"),
+    )
     ShowPlayerInfo = Twilight(
         RegexMatch(r"[.。！!]((森空岛信息)|(查询森空岛)|(森空岛查询)|(森空岛数据))"),
     )
