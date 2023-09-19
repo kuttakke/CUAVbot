@@ -24,7 +24,8 @@ class Skland:
     URL_ATTENDANCE = "https://zonai.skland.com/api/v1/game/attendance"
     URL_PLAYER_BINDING = "https://zonai.skland.com/api/v1/game/player/binding?"
     HEADERS = {
-        "User-Agent": "Skland/1.0.1 (com.hypergryph.skland; build:100001014; Android 25; ) Okhttp/4.11.0",
+        "User-Agent": "Skland/1.1.0 (com.hypergryph.skland; build:100100047; Android 33; ) Okhttp/4.11.0",
+        "platform": "1",
     }
     temp_user_info: dict[int, list[Player]] = {}
 
